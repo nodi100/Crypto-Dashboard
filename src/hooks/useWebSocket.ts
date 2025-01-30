@@ -1,58 +1,69 @@
 import { useEffect, useRef } from "react";
 import { useStore } from "@/store/useStore";
 import type { CryptoCurrency } from "@/types/cryptoTypes";
-import type { WebSocketData } from "@/types/webSocketTypes";
+import type { WebSocketData, WebSocketHandlers } from "@/types/webSocketTypes";
 
 export const useWebSocket = () => {
   const wsRef = useRef<WebSocket | null>(null);
+  const handlersRef = useRef<WebSocketHandlers | null>(null);
   const { setCryptocurrencies, setError } = useStore();
   const lastPricesRef = useRef<Record<string, string>>({});
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isManualClose = useRef(false);
 
   const connectWebSocket = () => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      return;
-    }
+    if (wsRef.current?.readyState === WebSocket.OPEN) return;
+
+    isManualClose.current = false;
 
     try {
       const ws = new WebSocket("wss://ws.coincap.io/prices?assets=ALL");
       wsRef.current = ws;
 
-      ws.onmessage = (event) => {
+      const handleMessage = (event: MessageEvent) => {
         const data: WebSocketData = JSON.parse(event.data);
-
-        setCryptocurrencies((prevCryptos: CryptoCurrency[]) => {
-          return prevCryptos.map((crypto) => {
+        setCryptocurrencies((prevCryptos: CryptoCurrency[]) =>
+          prevCryptos.map((crypto) => {
             const newPrice = data[crypto.id];
-
             if (newPrice && newPrice !== lastPricesRef.current[crypto.id]) {
               lastPricesRef.current[crypto.id] = newPrice;
               return { ...crypto, priceUsd: newPrice };
             }
-
             return crypto;
-          });
-        });
+          })
+        );
       };
 
-      ws.onerror = (error) => {
+      const handleError = (error: Event) => {
         setError("WebSocket connection error");
         console.error("WebSocket error:", error);
-        handleReconnect();
+        if (!isManualClose.current) handleReconnect();
       };
 
-      ws.onclose = () => {
+      const handleClose = () => {
         console.log("WebSocket connection closed");
-        handleReconnect();
+        if (!isManualClose.current) handleReconnect();
       };
 
-      ws.onopen = () => {
+      const handleOpen = () => {
         console.log("WebSocket connected");
-        // Clear any pending reconnection attempts when successfully connected
-        if (reconnectTimeoutRef.current) {
+        reconnectTimeoutRef.current &&
           clearTimeout(reconnectTimeoutRef.current);
-        }
       };
+
+      // Store handlers in ref
+      handlersRef.current = {
+        handleMessage,
+        handleError,
+        handleClose,
+        handleOpen,
+      };
+
+      // Add event listeners
+      ws.addEventListener("message", handleMessage);
+      ws.addEventListener("error", handleError);
+      ws.addEventListener("close", handleClose);
+      ws.addEventListener("open", handleOpen);
     } catch (error) {
       console.error("WebSocket connection failed:", error);
       handleReconnect();
@@ -60,20 +71,11 @@ export const useWebSocket = () => {
   };
 
   const handleReconnect = () => {
-    // Clear any existing WebSocket
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
+    if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+    if (isManualClose.current) return;
 
-    // Clear any existing reconnection timeout
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
-
-    // Attempt to reconnect after 5 seconds
     reconnectTimeoutRef.current = setTimeout(() => {
-      console.log("Attempting to reconnect WebSocket...");
+      console.log("Attempting to reconnect...");
       connectWebSocket();
     }, 5000);
   };
@@ -81,24 +83,35 @@ export const useWebSocket = () => {
   useEffect(() => {
     connectWebSocket();
 
-    // Cleanup function
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
+      isManualClose.current = true;
+      reconnectTimeoutRef.current && clearTimeout(reconnectTimeoutRef.current);
+
       if (wsRef.current) {
-        wsRef.current.close();
+        const ws = wsRef.current;
+
+        // Remove listeners using stored handlers
+        if (handlersRef.current) {
+          const { handleMessage, handleError, handleClose, handleOpen } =
+            handlersRef.current;
+          ws.removeEventListener("message", handleMessage);
+          ws.removeEventListener("error", handleError);
+          ws.removeEventListener("close", handleClose);
+          ws.removeEventListener("open", handleOpen);
+        }
+
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
         wsRef.current = null;
       }
-      // Clear the last prices when unmounting
+
       lastPricesRef.current = {};
+      handlersRef.current = null;
     };
   }, [setCryptocurrencies, setError]);
 
-  // Add a function to check connection status
-  const isConnected = () => {
-    return wsRef.current?.readyState === WebSocket.OPEN;
-  };
+  const isConnected = () => wsRef.current?.readyState === WebSocket.OPEN;
 
   return {
     webSocket: wsRef.current,

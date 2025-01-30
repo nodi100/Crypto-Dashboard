@@ -49,8 +49,8 @@ export default function Converter() {
       <h2 className="text-xl font-semibold mb-4">Crypto Converter</h2>
 
       <form onSubmit={handleConvert} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        <div>
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               From
             </label>
@@ -86,7 +86,6 @@ export default function Converter() {
             </select>
           </div>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Amount
@@ -101,9 +100,7 @@ export default function Converter() {
             placeholder="Enter amount"
           />
         </div>
-
         {error && <div className="text-red-500 text-sm">{error}</div>}
-
         <button
           type="submit"
           disabled={loading}
@@ -111,7 +108,6 @@ export default function Converter() {
         >
           {loading ? "Converting..." : "Convert"}
         </button>
-
         {result !== null && (
           <div className="mt-4 p-4 bg-gray-50 rounded-md">
             <h3 className="text-lg font-medium mb-2">Result:</h3>

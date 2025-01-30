@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getServerSideStore, useStore } from "@/store/useStore";
 import "./globals.css";
 
 import { Navbar } from "@/components/Navbar";
+import StoreInitializer from "@/components/StoreInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,16 +21,19 @@ export const metadata: Metadata = {
   description: "Monitor and convert cryptocurrencies in real-time",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverState = await getServerSideStore();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <StoreInitializer serverState={serverState} />
         <Navbar />
         {children}
       </body>

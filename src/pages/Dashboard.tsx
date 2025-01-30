@@ -13,21 +13,18 @@ export default function Dashboard() {
   const { fetchTop10Cryptocurrencies } = useApi();
   const { isConnected, reconnect } = useWebSocket();
 
-  useWebSocket();
-
   useEffect(() => {
-    const pollInterval = setInterval(() => {
+    const connectionCheckInterval = setInterval(() => {
       if (!isConnected()) {
-        fetchTop10Cryptocurrencies();
-
+        console.warn("WebSocket disconnected, attempting reconnect...");
         reconnect();
       }
-    }, 60000);
+    }, 30000);
 
     return () => {
-      clearInterval(pollInterval);
+      clearInterval(connectionCheckInterval);
     };
-  }, [isConnected, reconnect]);
+  }, [fetchTop10Cryptocurrencies, isConnected, reconnect]);
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -37,11 +34,13 @@ export default function Dashboard() {
     return <Loading />;
   }
 
-  const tableData = cryptocurrencies.map((item) => ({
-    ...item,
-    changePercent7d: priceChanges?.get(item.id)?.changePercent7d || "",
-    changePercent30d: priceChanges?.get(item.id)?.changePercent30d || "",
-  }));
+  const tableData = cryptocurrencies
+    ? cryptocurrencies.map((item) => ({
+        ...item,
+        changePercent7d: priceChanges?.get(item.id)?.changePercent7d || "",
+        changePercent30d: priceChanges?.get(item.id)?.changePercent30d || "",
+      }))
+    : [];
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">

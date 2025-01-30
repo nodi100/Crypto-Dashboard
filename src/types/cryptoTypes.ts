@@ -9,7 +9,6 @@ export interface CryptoCurrency {
 }
 
 export interface PriceChange {
-  id: string;
   changePercent7d: string;
   changePercent30d: string;
 }
@@ -17,6 +16,7 @@ export interface PriceChange {
 export interface CryptoState {
   cryptocurrencies: CryptoCurrency[];
   priceChanges: Map<string, PriceChange> | null;
+  initialized: boolean;
   loading: boolean;
   error: string | null;
   setCryptocurrencies: (
@@ -25,6 +25,10 @@ export interface CryptoState {
   setPriceChanges: (data: Map<string, PriceChange>) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  hydrate: (serverData: {
+    cryptos: CryptoCurrency[];
+    changes: Map<string, PriceChange>;
+  }) => void;
 }
 
 export interface HistoricalPriceItem {

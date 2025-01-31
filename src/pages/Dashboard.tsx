@@ -81,7 +81,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white text-black rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Top 10 Cryptocurrencies</h2>
       <Table
         cryptocurrencies={tableData}

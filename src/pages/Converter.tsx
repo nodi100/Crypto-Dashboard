@@ -55,7 +55,7 @@ export default function Converter() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white text-black rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Crypto Converter</h2>
 
       <form onSubmit={handleConvert} className="space-y-4">

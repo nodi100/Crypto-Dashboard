@@ -67,7 +67,7 @@ export default function History() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white text-black rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-base sm:text-xl font-semibold">Price History</h2>
         <div className="flex gap-2">

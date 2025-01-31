@@ -6,7 +6,7 @@ import type { WebSocketData, WebSocketHandlers } from "@/types/webSocketTypes";
 export const useWebSocket = () => {
   const wsRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef<WebSocketHandlers | null>(null);
-  const { setCryptocurrencies, setError } = useStore();
+  const { setCryptocurrencies } = useStore();
   const lastPricesRef = useRef<Record<string, string>>({});
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isManualClose = useRef(false);
@@ -35,7 +35,6 @@ export const useWebSocket = () => {
       };
 
       const handleError = (error: Event) => {
-        setError("WebSocket connection error");
         console.error("WebSocket error:", error);
         if (!isManualClose.current) handleReconnect();
       };
@@ -112,7 +111,7 @@ export const useWebSocket = () => {
       lastPricesRef.current = {};
       handlersRef.current = null;
     };
-  }, [setCryptocurrencies, setError]);
+  }, [setCryptocurrencies]);
 
   const isConnected = wsRef.current?.readyState === WebSocket.OPEN;
 

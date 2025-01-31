@@ -48,9 +48,9 @@ const TableRow = ({ crypto }: TableRowProps) => {
       <td className="p-2 text-right ">
         <Link
           href={`/history/${crypto.id}`}
-          className="text-sm hover:text-blue-700 transition-colors"
+          className="text-sm underline cursor-pointer hover:text-blue-700 transition-colors"
         >
-          details
+          Details
         </Link>
       </td>
     </tr>

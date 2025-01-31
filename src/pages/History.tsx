@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import Chart from "@/components/chart/Chart";
@@ -17,14 +17,6 @@ export default function History() {
   const [historyData, setHistoryData] = useState<HistoricalPriceItem[]>([]);
   const [chartData, setChartData] = useState<ChartDataItem[]>([]);
   const [timeRange, setTimeRange] = useState<string>("24h");
-
-  const last30Days = useMemo(() => {
-    return historyData.slice(-30);
-  }, [historyData]);
-
-  const last7Days = useMemo(() => {
-    return historyData.slice(-7);
-  }, [historyData]);
 
   useEffect(() => {
     loadChartData(timeRange);
@@ -48,17 +40,17 @@ export default function History() {
     ) {
       loadChartData(newRange);
     } else {
-      convertToChartData(newRange);
+      convertToChartData(newRange, historyData);
     }
   };
 
-  const convertToChartData = (range: string, data?: HistoricalPriceItem[]) => {
+  const convertToChartData = (range: string, data: HistoricalPriceItem[]) => {
     const finalData =
       range === "24h"
         ? data?.slice(-24) || []
         : range === "7d"
-        ? last7Days
-        : last30Days;
+        ? data.slice(-7)
+        : data.slice(-30);
 
     const chartData = finalData.map((item: HistoricalPriceItem) => ({
       time:

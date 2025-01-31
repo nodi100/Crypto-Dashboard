@@ -42,7 +42,7 @@ export const useStore = create<CryptoState>()(
 );
 
 export const getServerSideStore = async () => {
-  const API_BASE = "https://api.coincap.io/v2";
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
   const { setLoading, setError } = useStore.getState();
 
   try {

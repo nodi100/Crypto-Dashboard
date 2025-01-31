@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useApi } from "@/hooks/useApi";
@@ -13,18 +13,64 @@ export default function Dashboard() {
   const { fetchTop10Cryptocurrencies } = useApi();
   const { isConnected, reconnect } = useWebSocket();
 
+  const [sortConfig, setSortConfig] = useState<{
+    key: "name" | "price" | null;
+    direction: "asc" | "desc";
+  }>({ key: "price", direction: "desc" });
+
   useEffect(() => {
     const connectionCheckInterval = setInterval(() => {
-      if (!isConnected()) {
+      if (!isConnected) {
         console.warn("WebSocket disconnected, attempting reconnect...");
         reconnect();
       }
     }, 30000);
 
+    const pollInterval = setInterval(() => {
+      if (!isConnected) {
+        fetchTop10Cryptocurrencies();
+      }
+    }, 60000); // use pooling as backup method if websocket broke down.
+
     return () => {
       clearInterval(connectionCheckInterval);
+      clearInterval(pollInterval);
     };
-  }, [fetchTop10Cryptocurrencies, isConnected, reconnect]);
+  }, [isConnected, reconnect, fetchTop10Cryptocurrencies]);
+
+  const handleSort = (key: "name" | "price") => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedCryptos = cryptocurrencies ? [...cryptocurrencies] : [];
+  if (sortConfig.key) {
+    sortedCryptos.sort((a, b) => {
+      if (sortConfig.key === "name") {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        if (nameA < nameB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (nameA > nameB) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      } else if (sortConfig.key === "price") {
+        const priceA = parseFloat(a.priceUsd);
+        const priceB = parseFloat(b.priceUsd);
+        return sortConfig.direction === "asc"
+          ? priceA - priceB
+          : priceB - priceA;
+      }
+      return 0;
+    });
+  }
+
+  const tableData = sortedCryptos.map((item) => ({
+    ...item,
+    changePercent7d: priceChanges?.get(item.id)?.changePercent7d || "",
+    changePercent30d: priceChanges?.get(item.id)?.changePercent30d || "",
+  }));
 
   if (error) {
     return <div className="text-red-500">{error}</div>;
@@ -34,18 +80,14 @@ export default function Dashboard() {
     return <Loading />;
   }
 
-  const tableData = cryptocurrencies
-    ? cryptocurrencies.map((item) => ({
-        ...item,
-        changePercent7d: priceChanges?.get(item.id)?.changePercent7d || "",
-        changePercent30d: priceChanges?.get(item.id)?.changePercent30d || "",
-      }))
-    : [];
-
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Top 10 Cryptocurrencies</h2>
-      <CryptoTable cryptocurrencies={tableData} />
+      <CryptoTable
+        cryptocurrencies={tableData}
+        onSort={handleSort}
+        sortConfig={sortConfig}
+      />
     </div>
   );
 }

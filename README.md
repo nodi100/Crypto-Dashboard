@@ -35,7 +35,7 @@ pnpm install
 
 Create a .env.local file in the root directory:
 
-envCopyNEXT_PUBLIC_API_BASE=https://api.coincap.io/v2
+Copy NEXT_PUBLIC_API_BASE=https://api.coincap.io/v2
 
 Start the development server:
 pnpm dev

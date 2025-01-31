@@ -111,7 +111,7 @@ export const useWebSocket = () => {
     };
   }, [setCryptocurrencies, setError]);
 
-  const isConnected = () => wsRef.current?.readyState === WebSocket.OPEN;
+  const isConnected = wsRef.current?.readyState === WebSocket.OPEN;
 
   return {
     webSocket: wsRef.current,

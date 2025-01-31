@@ -24,7 +24,7 @@ interface ChartData {
 
 export default function History() {
   const params = useParams();
-  const id = params?.id;
+  const id = params?.id || "";
 
   const { loading } = useStore();
   const { fetchHistoricalData } = useApi();

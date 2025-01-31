@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getServerSideStore, useStore } from "@/store/useStore";
+import { getServerSideStore } from "@/store/useStore";
 import "./globals.css";
 
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import StoreInitializer from "@/components/StoreInitializer";
 
 const geistSans = Geist({
@@ -37,7 +36,6 @@ export default async function RootLayout({
         <StoreInitializer serverState={serverState} />
         <Navbar />
         {children}
-        <Footer />
       </body>
     </html>
   );

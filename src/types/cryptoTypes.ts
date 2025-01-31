@@ -13,6 +13,11 @@ export type PriceChange = {
   changePercent30d: string;
 };
 
+export type ServerState = {
+  topCryptos: CryptoCurrency[];
+  changesMap: Map<string, PriceChange>;
+};
+
 export type CryptoState = {
   cryptocurrencies: CryptoCurrency[];
   priceChanges: Map<string, PriceChange> | null;
@@ -25,10 +30,7 @@ export type CryptoState = {
   setPriceChanges: (data: Map<string, PriceChange>) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  hydrate: (serverData: {
-    cryptos: CryptoCurrency[];
-    changes: Map<string, PriceChange>;
-  }) => void;
+  hydrate: (serverData: ServerState) => void;
 };
 
 export type HistoricalPriceItem = {

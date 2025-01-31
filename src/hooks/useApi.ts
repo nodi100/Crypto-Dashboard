@@ -24,14 +24,18 @@ export const useApi = () => {
           new Error("Failed to fetch top cryptocurrencies");
         }
         return response.json();
-      } catch (err: any) {
-        setError(err.message);
-        throw err;
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+        throw setError;
       } finally {
         setLoading(false);
       }
     },
-    [API_BASE, setLoading, setError]
+    [setLoading, setError]
   );
 
   const get = useCallback(
@@ -40,7 +44,7 @@ export const useApi = () => {
   );
 
   const post = useCallback(
-    (endpoint: string, body: Object, options = {}) =>
+    (endpoint: string, body: object, options = {}) =>
       apiCall(endpoint, "POST", { ...options, body: JSON.stringify(body) }),
     [apiCall]
   );
@@ -53,7 +57,7 @@ export const useApi = () => {
       setError("Failed to fetch cryptocurrency data");
       console.error("API error:", error);
     }
-  }, [setError, setCryptocurrencies]);
+  }, [setError, setCryptocurrencies, get]);
 
   const fetchHistoricalData = useCallback(
     async (timeRange: string, selectedCrypto?: string | string[]) => {
@@ -69,7 +73,7 @@ export const useApi = () => {
         return [];
       }
     },
-    [setError]
+    [setError, get]
   );
 
   const convertCrypto = useCallback(
@@ -88,7 +92,7 @@ export const useApi = () => {
         return null;
       }
     },
-    [setError]
+    [setError, get]
   );
 
   return {

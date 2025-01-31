@@ -47,6 +47,7 @@ export default function Converter() {
         setError("Conversion failed");
       }
     } catch (err) {
+      console.error(err);
       setError("An error occurred during conversion");
     } finally {
       setLoading(false);

@@ -47,8 +47,9 @@ export const useWebSocket = () => {
 
       const handleOpen = () => {
         console.log("WebSocket connected");
-        reconnectTimeoutRef.current &&
+        if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
+        }
       };
 
       // Store handlers in ref
@@ -85,7 +86,9 @@ export const useWebSocket = () => {
 
     return () => {
       isManualClose.current = true;
-      reconnectTimeoutRef.current && clearTimeout(reconnectTimeoutRef.current);
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
 
       if (wsRef.current) {
         const ws = wsRef.current;

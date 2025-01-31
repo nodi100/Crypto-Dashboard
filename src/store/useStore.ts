@@ -3,14 +3,9 @@ import { devtools } from "zustand/middleware";
 import type {
   CryptoState,
   CryptoCurrency,
-  PriceChange,
   HistoricalPriceItem,
+  ServerState,
 } from "@/types/cryptoTypes";
-
-type ServerState = {
-  topCryptos: CryptoCurrency[];
-  changesMap: Map<string, PriceChange>;
-};
 
 export const useStore = create<CryptoState>()(
   devtools((set) => ({
@@ -97,7 +92,7 @@ export const getServerSideStore = async () => {
             changePercent7d,
             changePercent30d,
           };
-        } catch (error: any) {
+        } catch (error) {
           console.error(error);
           return { id: crypto.id, changePercent7d: "", changePercent30d: "" };
         }
@@ -108,9 +103,13 @@ export const getServerSideStore = async () => {
       priceChanges.map(({ id, ...rest }) => [id, rest])
     );
     return { topCryptos, changesMap };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching server-side store:", error);
-    setError(error);
+    if (error instanceof Error) {
+      setError(`Error fetching server-side store:, ${error.message}`);
+    } else {
+      setError("Error fetching server-side store: An unknown error occurred");
+    }
     return { topCryptos: [], changesMap: new Map() };
   } finally {
     setLoading(false);

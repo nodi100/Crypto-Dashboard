@@ -2,11 +2,15 @@
 
 import { useEffect } from "react";
 import { useStore } from "@/store/useStore";
+import { CryptoCurrency, PriceChange } from "@/types/cryptoTypes";
 
 export default function StoreInitializer({
   serverState,
 }: {
-  serverState: any;
+  serverState: {
+    topCryptos: CryptoCurrency[];
+    changesMap: Map<string, PriceChange>;
+  };
 }) {
   const hydrate = useStore((state) => state.hydrate);
 

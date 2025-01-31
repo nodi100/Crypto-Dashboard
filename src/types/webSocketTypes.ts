@@ -1,6 +1,6 @@
-export interface WebSocketData {
+export type WebSocketData = {
   [key: string]: string;
-}
+};
 
 export type WebSocketHandlers = {
   handleMessage: (event: MessageEvent) => void;

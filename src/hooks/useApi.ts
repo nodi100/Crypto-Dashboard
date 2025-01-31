@@ -47,7 +47,7 @@ export const useApi = () => {
 
   const fetchTop10Cryptocurrencies = useCallback(async () => {
     try {
-      const response = await get(`${API_BASE}/assets?limit=10`);
+      const response = await get(`/assets?limit=10`);
       setCryptocurrencies(response.data);
     } catch (error) {
       setError("Failed to fetch cryptocurrency data");
@@ -59,20 +59,17 @@ export const useApi = () => {
     async (timeRange: string, selectedCrypto?: string | string[]) => {
       const interval = timeRange === "24h" ? "h1" : "d1";
       try {
-        setLoading(true);
         const response = await get(
-          `${API_BASE}/assets/${selectedCrypto}/history?interval=${interval}`
+          `/assets/${selectedCrypto}/history?interval=${interval}`
         );
         return response.data;
       } catch (error) {
         setError("Failed to fetch historical data");
         console.error("Historical data error:", error);
         return [];
-      } finally {
-        setLoading(false);
       }
     },
-    [setError, setLoading]
+    [setError]
   );
 
   const convertCrypto = useCallback(

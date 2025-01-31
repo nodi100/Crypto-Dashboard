@@ -1,36 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { useStore } from "@/store/useStore";
+
+import Chart from "@/components/chart/Chart";
 import { useApi } from "@/hooks/useApi";
-import { Loading } from "@/components/Loading";
 import { timeRangeOptions } from "@/utils/constants";
 import type { HistoricalPriceItem } from "@/types/cryptoTypes";
-
-interface ChartData {
-  time: string;
-  price: number;
-}
+import type { ChartDataItem } from "@/components/chart/types";
 
 export default function History() {
   const params = useParams();
   const id = params?.id || "";
 
-  const { loading } = useStore();
   const { fetchHistoricalData } = useApi();
   const [historyData, setHistoryData] = useState<HistoricalPriceItem[]>([]);
-  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
   const [timeRange, setTimeRange] = useState<string>("24h");
+
+  const last30Days = useMemo(() => {
+    return historyData.slice(-30);
+  }, [historyData]);
+
+  const last7Days = useMemo(() => {
+    return historyData.slice(-7);
+  }, [historyData]);
 
   useEffect(() => {
     loadChartData(timeRange);
@@ -40,7 +34,7 @@ export default function History() {
     try {
       const data = await fetchHistoricalData(timeRange, id);
       setHistoryData(data);
-      convertToChartData(data, timeRange);
+      convertToChartData(timeRange, data);
     } catch (error) {
       console.error("Failed to load chart data:", error);
     }
@@ -54,17 +48,17 @@ export default function History() {
     ) {
       loadChartData(newRange);
     } else {
-      convertToChartData(historyData, newRange);
+      convertToChartData(newRange);
     }
   };
 
-  const convertToChartData = (data: HistoricalPriceItem[], range: string) => {
+  const convertToChartData = (range: string, data?: HistoricalPriceItem[]) => {
     const finalData =
       range === "24h"
-        ? data.slice(-24)
+        ? data?.slice(-24) || []
         : range === "7d"
-        ? data.slice(-7)
-        : data.slice(-30);
+        ? last7Days
+        : last30Days;
 
     const chartData = finalData.map((item: HistoricalPriceItem) => ({
       time:
@@ -83,13 +77,13 @@ export default function History() {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Price History</h2>
+        <h2 className="text-base sm:text-xl font-semibold">Price History</h2>
         <div className="flex gap-2">
           {timeRangeOptions.map((option) => (
             <button
               key={option.value}
               onClick={() => handleChangePeriod(option.value)}
-              className={`px-4 py-2 rounded-md ${
+              className={`px-2 py-1 rounded-md text-sm sm:px-4 sm:py-2 sm:text-base ${
                 timeRange === option.value
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -100,38 +94,7 @@ export default function History() {
           ))}
         </div>
       </div>
-
-      <div className="h-[400px]">
-        {loading ? (
-          <Loading />
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                tick={{ fontSize: 12 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                tick={{ fontSize: 12 }}
-                domain={["auto", "auto"]}
-                tickFormatter={(value) => `$${value.toFixed(2)}`}
-              />
-              <Tooltip
-                formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
-              />
-              <Line
-                type="monotone"
-                dataKey="price"
-                stroke="#2563eb"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <Chart chartData={chartData} />
     </div>
   );
 }

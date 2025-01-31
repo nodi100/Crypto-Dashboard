@@ -1,18 +1,8 @@
 import React from "react";
-import CryptoCard from "./CryptoCard";
-import type { CryptoCurrency } from "@/types/cryptoTypes";
+import TableRow from "./TableRow";
+import { TableProps } from "./types";
 
-type CryptoTableProps = {
-  cryptocurrencies: CryptoCurrency[];
-  onSort: (key: "name" | "price") => void;
-  sortConfig: { key: "name" | "price" | null; direction: "asc" | "desc" };
-};
-
-const CryptoTable = ({
-  cryptocurrencies,
-  onSort,
-  sortConfig,
-}: CryptoTableProps) => {
+const Table = ({ cryptocurrencies, onSort, sortConfig }: TableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -43,7 +33,7 @@ const CryptoTable = ({
         </thead>
         <tbody>
           {cryptocurrencies.map((crypto) => (
-            <CryptoCard crypto={crypto} key={crypto.id} />
+            <TableRow crypto={crypto} key={crypto.id} />
           ))}
         </tbody>
       </table>
@@ -51,4 +41,4 @@ const CryptoTable = ({
   );
 };
 
-export default CryptoTable;
+export default Table;

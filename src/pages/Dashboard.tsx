@@ -5,7 +5,7 @@ import { useStore } from "@/store/useStore";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useApi } from "@/hooks/useApi";
 
-import CryptoTable from "@/components/CryptoTable";
+import Table from "@/components/table/Table";
 import { Loading } from "@/components/Loading";
 
 export default function Dashboard() {
@@ -83,7 +83,7 @@ export default function Dashboard() {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-xl font-semibold mb-4">Top 10 Cryptocurrencies</h2>
-      <CryptoTable
+      <Table
         cryptocurrencies={tableData}
         onSort={handleSort}
         sortConfig={sortConfig}

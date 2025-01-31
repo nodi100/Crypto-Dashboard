@@ -1,12 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import type { CryptoCurrency } from "@/types/cryptoTypes";
+import { TableRowProps } from "./types";
 
-type CryptoCardProps = {
-  crypto: CryptoCurrency;
-};
-
-const CryptoCard = ({ crypto }: CryptoCardProps) => {
+const TableRow = ({ crypto }: TableRowProps) => {
   return (
     <tr key={crypto.id} className="border-b">
       <td className="py-2">
@@ -61,4 +57,4 @@ const CryptoCard = ({ crypto }: CryptoCardProps) => {
   );
 };
 
-export default CryptoCard;
+export default TableRow;

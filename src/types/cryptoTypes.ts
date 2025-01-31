@@ -1,4 +1,4 @@
-export interface CryptoCurrency {
+export type CryptoCurrency = {
   id: string;
   name: string;
   symbol: string;
@@ -6,14 +6,14 @@ export interface CryptoCurrency {
   changePercent24Hr: string;
   changePercent7d: string;
   changePercent30d: string;
-}
+};
 
-export interface PriceChange {
+export type PriceChange = {
   changePercent7d: string;
   changePercent30d: string;
-}
+};
 
-export interface CryptoState {
+export type CryptoState = {
   cryptocurrencies: CryptoCurrency[];
   priceChanges: Map<string, PriceChange> | null;
   initialized: boolean;
@@ -29,10 +29,10 @@ export interface CryptoState {
     cryptos: CryptoCurrency[];
     changes: Map<string, PriceChange>;
   }) => void;
-}
+};
 
-export interface HistoricalPriceItem {
+export type HistoricalPriceItem = {
   date: Date;
   priceUsd: string;
   time: number;
-}
+};

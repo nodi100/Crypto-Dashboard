@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import { useApi } from "@/hooks/useApi";
 
+import { Input } from "@/components/input/Input";
+import { Select } from "@/components/select/Select";
+import { Button } from "@/components/button/Button";
+
 export default function Converter() {
   const { cryptocurrencies } = useStore();
   const { convertCrypto } = useApi();
@@ -14,6 +18,11 @@ export default function Converter() {
   const [result, setResult] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const dropDownOptions = cryptocurrencies.map((item) => ({
+    value: item.id,
+    label: item.name,
+  }));
 
   const handleConvert = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,63 +60,48 @@ export default function Converter() {
       <form onSubmit={handleConvert} className="space-y-4">
         <div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              From
-            </label>
-            <select
+            <Select
+              options={dropDownOptions.filter(
+                (item) => item.value !== toCrypto
+              )}
+              label="From"
+              className="w-full p-2 border rounded-md"
               value={fromCrypto}
               onChange={(e) => setFromCrypto(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="">Select cryptocurrency</option>
-              {cryptocurrencies.map((crypto) => (
-                <option key={crypto.id} value={crypto.id}>
-                  {crypto.name} ({crypto.symbol})
-                </option>
-              ))}
-            </select>
+              placeholder="Select cryptocurrency"
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              To
-            </label>
-            <select
+            <Select
+              options={dropDownOptions.filter(
+                (item) => item.value !== fromCrypto
+              )}
+              label="To"
+              className="w-full p-2 border rounded-md"
               value={toCrypto}
               onChange={(e) => setToCrypto(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="">Select cryptocurrency</option>
-              {cryptocurrencies.map((crypto) => (
-                <option key={crypto.id} value={crypto.id}>
-                  {crypto.name} ({crypto.symbol})
-                </option>
-              ))}
-            </select>
+              placeholder="Select cryptocurrency"
+            />
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount
-          </label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            min="0"
-            step="any"
-            className="w-full p-2 border rounded-md"
-            placeholder="Enter amount"
-          />
-        </div>
+        <Input
+          label="Amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          min="0"
+          step="any"
+          className="w-full p-2 border rounded-md"
+          placeholder="Enter amount"
+        />
         {error && <div className="text-red-500 text-sm">{error}</div>}
-        <button
+        <Button
+          label={loading ? "Converting..." : "Convert"}
           type="submit"
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Converting..." : "Convert"}
-        </button>
+        />
         {result !== null && (
           <div className="mt-4 p-4 bg-gray-50 rounded-md">
             <h3 className="text-lg font-medium mb-2">Result:</h3>

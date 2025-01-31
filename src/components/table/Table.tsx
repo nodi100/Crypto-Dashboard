@@ -10,25 +10,25 @@ const Table = ({ cryptocurrencies, onSort, sortConfig }: TableProps) => {
           <tr className="border-b">
             <th
               onClick={() => onSort("name")}
-              className="cursor-pointer py-2 text-left hover:bg-gray-50"
+              className="cursor-pointer p-2 text-left hover:bg-gray-50"
             >
               Name{" "}
               {sortConfig.key === "name" &&
                 (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
-            <th className="py-2 text-left">Symbol</th>
+            <th className="p-2 text-left">Symbol</th>
             <th
               onClick={() => onSort("price")}
-              className="cursor-pointer py-2 text-right hover:bg-gray-50"
+              className="cursor-pointer p-2 text-right hover:bg-gray-50"
             >
               Price{" "}
               {sortConfig.key === "price" &&
                 (sortConfig.direction === "asc" ? "↑" : "↓")}
             </th>
-            <th className="py-2 text-right">24h</th>
-            <th className="py-2 text-right">7d</th>
-            <th className="py-2 text-right">30d</th>
-            <th className="py-2 text-right"></th>
+            <th className="p-2 text-right">24h</th>
+            <th className="p-2 text-right">7d</th>
+            <th className="p-2 text-right">30d</th>
+            <th className="p-2 text-right"></th>
           </tr>
         </thead>
         <tbody>

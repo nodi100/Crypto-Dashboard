@@ -4,13 +4,14 @@ import type {
   CryptoState,
   CryptoCurrency,
   HistoricalPriceItem,
-  ServerState,
 } from "@/types/cryptoTypes";
 
 export const useStore = create<CryptoState>()(
   devtools((set) => ({
     cryptocurrencies: [],
     priceChanges: new Map(),
+    rates: [],
+    selectedPriceUnit: { symbol: "$", rateUsd: 1, name: "USD" },
     loading: false,
     initialized: false,
     error: null,
@@ -20,12 +21,18 @@ export const useStore = create<CryptoState>()(
           typeof data === "function" ? data(state.cryptocurrencies) : data,
       }));
     },
-    setPriceChanges(data) {
+    setPriceChanges: (data) => {
       set({ priceChanges: data });
+    },
+    setRates: (data) => {
+      set({ rates: data });
+    },
+    setSelectedPriceUnit: (data) => {
+      set({ selectedPriceUnit: data });
     },
     setLoading: (loading) => set({ loading }),
     setError: (error) => set({ error }),
-    hydrate: (serverData: ServerState) => {
+    hydrate: (serverData) => {
       set({
         cryptocurrencies: serverData.topCryptos,
         priceChanges: new Map(serverData.changesMap),

@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useStore } from "@/store/useStore";
 import { useApi } from "@/hooks/useApi";
 
-import { Input } from "@/components/input/Input";
-import { Select } from "@/components/select/Select";
-import { Button } from "@/components/button/Button";
+import Input from "@/components/input/Input";
+import Select from "@/components/select/Select";
+import Button from "@/components/button/Button";
 
 export default function Converter() {
   const { cryptocurrencies } = useStore();

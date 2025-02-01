@@ -1,22 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useApi } from "@/hooks/useApi";
 
+import { wantedRates } from "@/utils/constants";
 import Table from "@/components/table/Table";
-import { Loading } from "@/components/Loading";
+import Loading from "@/components/Loading";
+import Select from "@/components/select/Select";
 
 export default function Dashboard() {
-  const { cryptocurrencies, priceChanges, loading, error } = useStore();
-  const { fetchTop10Cryptocurrencies } = useApi();
+  const {
+    cryptocurrencies,
+    priceChanges,
+    rates,
+    selectedPriceUnit,
+    loading,
+    error,
+    setSelectedPriceUnit,
+  } = useStore();
+  const { fetchTop10Cryptocurrencies, getRates } = useApi();
   const { isConnected, reconnect } = useWebSocket();
 
   const [sortConfig, setSortConfig] = useState<{
     key: "name" | "price" | null;
     direction: "asc" | "desc";
   }>({ key: "price", direction: "desc" });
+
+  const filterdRates = useMemo(() => {
+    const filtered = rates.filter((item) => wantedRates.includes(item.symbol));
+    const finalData = filtered.filter(
+      (obj, index, self) => index === self.findIndex((o) => o.id === obj.id)
+    );
+    return finalData;
+  }, [rates]);
+
+  useEffect(() => {
+    getRates();
+  }, []);
 
   useEffect(() => {
     const connectionCheckInterval = setInterval(() => {
@@ -46,6 +68,22 @@ export default function Dashboard() {
     setSortConfig({ key, direction });
   };
 
+  const handleSelectPriceUnit = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedValue = event.target.value;
+    const selectedText = event.target.options[event.target.selectedIndex].text;
+    const symbol = filterdRates.find(
+      (item) => item.symbol === selectedText
+    )?.currencySymbol;
+
+    setSelectedPriceUnit({
+      symbol: symbol || "₾",
+      rateUsd: selectedValue,
+      name: selectedText,
+    });
+  };
+
   const sortedCryptos = cryptocurrencies ? [...cryptocurrencies] : [];
   if (sortConfig.key) {
     sortedCryptos.sort((a, b) => {
@@ -72,6 +110,11 @@ export default function Dashboard() {
     changePercent30d: priceChanges?.get(item.id)?.changePercent30d || "",
   }));
 
+  const selectOtions = filterdRates.map((rate) => ({
+    label: rate.symbol,
+    value: rate.rateUsd,
+  }));
+
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
@@ -82,7 +125,16 @@ export default function Dashboard() {
 
   return (
     <div className="bg-white text-black rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold mb-4">Top 10 Cryptocurrencies</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Top 10 Cryptocurrencies</h2>
+        <Select
+          options={selectOtions}
+          label="Price Unit"
+          className="w-[60px] border rounded-md"
+          value={selectedPriceUnit.rateUsd}
+          onChange={(e) => handleSelectPriceUnit(e)}
+        />
+      </div>
       <Table
         cryptocurrencies={tableData}
         onSort={handleSort}

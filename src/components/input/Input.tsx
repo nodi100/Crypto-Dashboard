@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import type { InputProps } from "./types";
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = "", ...props }, ref) => {
     return (
       <div className="flex flex-col w-full">
@@ -24,3 +24,5 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = "Input";
+
+export default Input;

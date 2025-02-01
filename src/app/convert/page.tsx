@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Converter from "@/pages/Converter";
-import { Loading } from "@/components/Loading";
+import Loading from "@/components/Loading";
 
 export default function ConvertPage() {
   return (

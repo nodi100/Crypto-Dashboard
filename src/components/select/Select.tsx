@@ -1,10 +1,10 @@
 import React, { forwardRef } from "react";
 import type { SelectProps } from "./types";
 
-export const Select = forwardRef<HTMLSelectElement, SelectProps>(
+const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, options, placeholder, className = "", ...props }, ref) => {
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col">
         {label && (
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {label}
@@ -33,3 +33,5 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 );
 
 Select.displayName = "Dropdown";
+
+export default Select;

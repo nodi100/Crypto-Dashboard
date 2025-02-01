@@ -4,7 +4,7 @@ import { useStore } from "@/store/useStore";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
 export const useApi = () => {
-  const { setLoading, setError, setCryptocurrencies } = useStore();
+  const { setLoading, setError, setCryptocurrencies, setRates } = useStore();
 
   const apiCall = useCallback(
     async (endpoint: string, method: string, options = {}) => {
@@ -95,10 +95,21 @@ export const useApi = () => {
     [setError, get]
   );
 
+  const getRates = useCallback(async () => {
+    try {
+      const response = await get(`/rates`);
+      setRates(response.data);
+    } catch (error) {
+      setError("Failed to fetch rates data");
+      console.error("API error:", error);
+    }
+  }, [setError, setRates, get]);
+
   return {
     fetchTop10Cryptocurrencies,
     fetchHistoricalData,
     convertCrypto,
+    getRates,
     get,
     post,
   };

@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { ButtonProps } from "./types";
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ label, variant = "primary", className = "", ...props }, ref) => {
     const variantClasses = {
       primary: "bg-blue-500 text-white hover:bg-blue-600",
@@ -22,3 +22,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = "Button";
+
+export default Button;

@@ -1,8 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { useStore } from "@/store/useStore";
 import { TableRowProps } from "./types";
 
 const TableRow = ({ crypto }: TableRowProps) => {
+  const { selectedPriceUnit } = useStore();
+
+  const price = Number(crypto.priceUsd) / Number(selectedPriceUnit.rateUsd);
   return (
     <tr key={crypto.id} className="border-b">
       <td className="p-2">
@@ -16,7 +20,8 @@ const TableRow = ({ crypto }: TableRowProps) => {
         </div>
       </td>
       <td className="p-2 text-right">
-        ${parseFloat(crypto.priceUsd).toFixed(2)}
+        {selectedPriceUnit.symbol}
+        {price.toFixed(2)}
       </td>
       <td
         className={`p-2 text-right ${

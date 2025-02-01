@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useStore } from "@/store/useStore";
-import { Loading } from "../Loading";
+import Loading from "../Loading";
 import type { ChartProps } from "./types";
 
 const Chart = ({ chartData }: ChartProps) => {

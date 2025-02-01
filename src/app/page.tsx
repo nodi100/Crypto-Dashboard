@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import DashboardPage from "./dashboard/page";
-import { Loading } from "@/components/Loading";
+import Loading from "@/components/Loading";
 
 export default async function Home() {
   return (

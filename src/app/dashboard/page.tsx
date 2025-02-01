@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Dashboard from "@/pages/Dashboard";
-import { Loading } from "@/components/Loading";
+import Loading from "@/components/Loading";
 
 export default function DashboardPage() {
   return (

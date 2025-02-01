@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { Suspense } from "react";
 import History from "@/pages/History";
-import { Loading } from "@/components/Loading";
+import Loading from "@/components/Loading";
 
 export default function HistoryPage() {
   const params = useParams();

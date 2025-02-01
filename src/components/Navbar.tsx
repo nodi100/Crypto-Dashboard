@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export const Navbar = () => {
+const Navbar = () => {
   const pathname = usePathname();
 
   const isActiveLink = (path: string) => {
@@ -43,3 +43,5 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+export default Navbar;

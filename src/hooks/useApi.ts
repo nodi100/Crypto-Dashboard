@@ -79,8 +79,10 @@ export const useApi = () => {
   const convertCrypto = useCallback(
     async (fromId: string, toId: string, amount: number) => {
       try {
-        const fromData = await get(`/assets/${fromId}`);
-        const toData = await get(`/assets/${toId}`);
+        const [fromData, toData] = await Promise.all([
+          get(`/assets/${fromId}`),
+          get(`/assets/${toId}`),
+        ]);
 
         const fromPrice = parseFloat(fromData.data.priceUsd);
         const toPrice = parseFloat(toData.data.priceUsd);
